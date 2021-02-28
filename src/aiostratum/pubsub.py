@@ -169,7 +169,7 @@ class Pubsub:
 
     @classmethod
     def iterate_subscribers(cls, event):
-        for subscription in cls.__subscriptions.get(event, weakref.WeakKeyDictionary()).iterkeyrefs():
+        for subscription in cls.__subscriptions.get(event, weakref.WeakKeyDictionary()).keyrefs():
             subscription = subscription()
             if subscription is None:
                 # Subscriber is no more connected

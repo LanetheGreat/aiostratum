@@ -4,17 +4,23 @@ from twisted.internet import reactor
 from .services import GenericService
 
 
-class ConnectionRegistry:
-    __connections = weakref.WeakKeyDictionary()
+class RegistryMeta(type):
+
+    def __iter__(cls):  # @NoSelf
+        yield from cls._connections.keyrefs()
+
+
+class ConnectionRegistry(metaclass=RegistryMeta):
+    _connections = weakref.WeakKeyDictionary()
 
     @classmethod
     def add_connection(cls, conn):
-        cls.__connections[conn] = True
+        cls._connections[conn] = True
 
     @classmethod
     def remove_connection(cls, conn):
         try:
-            del cls.__connections[conn]
+            del cls._connections[conn]
         except Exception:
             print('Warning: Cannot remove connection from ConnectionRegistry')
 
@@ -30,10 +36,6 @@ class ConnectionRegistry:
             return None
 
         return conn.get_session()
-
-    @classmethod
-    def __iter__(cls):
-        return cls.__connections.iterkeyrefs()
 
 
 def dump_connections():
